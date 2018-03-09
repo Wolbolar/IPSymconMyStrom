@@ -1,0 +1,11 @@
+{
+    "id": "{C6D2D58D-E32A-5F1A-42B6-35E0E6915623}",
+    "name": "MyStrom",
+    "type": 3,
+    "vendor": "myStrom",
+    "aliases": ["myStrom"],
+    "parentRequirements": ["{E3854CBD-BEC9-4871-087A-3DDC2A4B926F}"],
+    "childRequirements": [],
+    "implemented": ["{5CD26D2F-626B-1998-D2B8-6068E6ACD376}"],
+    "prefix": "MyStrom"
+}

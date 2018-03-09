@@ -1,0 +1,30 @@
+{
+  "translations": {
+    "de": {
+      "IP adress": "IP Adresse",
+      "MAC adress, please use ony uppercase without : for example 5CCF7F02D676": "MAC Adresse, bitte diese in Großbuchstaben ohne : eintragen z.B. 5CCF7F02D676",
+      "MAC adress": "MAC Adresse",
+      "device type": "Gerätetyp",
+      "Bulb": "Lampe",
+      "Switch": "Steckdose",
+      "Seconds": "Sekunden",
+      "State": "Status",
+      "Color Selection": "Farb Auswahl",
+      "Color": "Farbe",
+      "Hue": "Farbwert",
+      "Saturation": "Sättigung",
+      "Brightness": "Helligkeit",
+      "Please choose": "Bitte auswählen",
+      "White": "Weiß",
+      "Red": "Rot",
+      "Green": "Grün",
+      "Blue": "Blau",
+      "Update": "Aktualisieren",
+      "Creating instance.": "Die Instanz wird erstellt.",
+      "myStrom accessible.": "myStrom ereichbar.",
+      "interface closed.": "Interface geschlossen.",
+      "connection to myStrom lost.": "Verbindung zum myStrom verloren.",
+      "field must not be empty.": "Felder dürfen nicht leer sein."
+    }
+  }
+}

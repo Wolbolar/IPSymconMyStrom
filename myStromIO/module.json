@@ -1,0 +1,11 @@
+{
+    "id": "{EEC32D93-7D60-BED6-9078-AE27FA2A2AEE}",
+    "name": "MyStromIO",
+    "type": 1,
+    "vendor": "myStrom",
+    "aliases": ["myStrom I/O"],
+    "parentRequirements": [],
+    "childRequirements": ["{5CD26D2F-626B-1998-D2B8-6068E6ACD376}"],
+    "implemented": ["{E3854CBD-BEC9-4871-087A-3DDC2A4B926F}"],
+    "prefix": "MyStromIO"
+}
