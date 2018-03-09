@@ -228,6 +228,7 @@ class MyStromIO extends IPSModule
 		// test
 		//$payload = '{"6001940376FA": {"type": "rgblamp", "battery": false, "reachable": true, "meshroot": false, "on": true, "color": "0;0;100", "power": 5.8, "fw_version": "2.19"}}';
 		$this->SendDebug("MyStrom Response", $payload, 0);
+		$this->SendToMyStromDevice($payload);
 		$data = json_decode($payload, true);
 		$mac = key($data);
 		$this->SendDebug("MyStrom MAC", $mac, 0);
@@ -273,13 +274,6 @@ class MyStromIO extends IPSModule
 			}
 		}
 		return $payload;
-	}
-
-	public function DebugTest()
-	{
-		$data = array("type" => "data_request", "status" => "on");
-		$payload = array("mac" => "5ccf7f02d676", "data" => $data);
-		$this->SendToMyStromDevice($payload);
 	}
 
 	// Type String, Declaration can be used when PHP 7 is available
@@ -346,7 +340,6 @@ class MyStromIO extends IPSModule
 		} else {
 			return $response;
 		}
-		return $response;
 	}
 
 	/***********************************************************
