@@ -1,0 +1,79 @@
+{
+  "elements": [
+    {
+      "name": "devicetype",
+      "type": "Select",
+      "caption": "device type",
+      "options": [
+        {
+          "label": "Please choose",
+          "value": -1
+        },
+        {
+          "label": "Switch",
+          "value": 0
+        },
+        {
+          "label": "Bulb",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "type": "Label",
+      "label": "IP adress"
+    },
+    {
+      "name": "ip",
+      "type": "ValidationTextBox",
+      "caption": "IP adress"
+    },
+    {
+      "type": "Label",
+      "label": "MAC adress, please use ony uppercase without : for example 5CCF7F02D676"
+    },
+    {
+      "name": "mac",
+      "type": "ValidationTextBox",
+      "caption": "MAC adress"
+    },
+    {
+      "name": "UpdateInterval",
+      "type": "IntervalBox",
+      "caption": "Seconds"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Label",
+      "label": "Update"
+    },
+    {
+      "type": "Button",
+      "label": "Update",
+      "onClick": "MyStrom_DataUpdate($id);"
+    }
+  ],
+  "status": [
+    {
+      "code": 101,
+      "icon": "inactive",
+      "caption": "Creating instance."
+    },
+    {
+      "code": 102,
+      "icon": "active",
+      "caption": "myStrom created."
+    },
+    {
+      "code": 104,
+      "icon": "inactive",
+      "caption": "interface closed."
+    },
+    {
+      "code": 205,
+      "icon": "error",
+      "caption": "mac has not correct length"
+    }
+  ]
+}

@@ -162,10 +162,11 @@ class MyStrom extends IPSModule
 
 		//These lines are parsed on Symcon Startup or Instance creation
 		//You cannot use variables here. Just static values.
-		$this->ConnectParent("{EEC32D93-7D60-BED6-9078-AE27FA2A2AEE}"); // I/O
 		$this->RegisterPropertyInteger('devicetype', -1);
 		$this->RegisterPropertyString('ip', '');
 		$this->RegisterPropertyString('mac', '');
+        $this->RegisterPropertyInteger('UpdateInterval', 60);
+        $this->RegisterTimer('MyStromDataUpdate', 0, 'MyStrom_DataUpdate(' . $this->InstanceID . ');');
 	}
 
 	public function ApplyChanges()
@@ -237,36 +238,40 @@ class MyStrom extends IPSModule
 				$this->RegisterVariableInteger("brightness", $this->Translate("Brightness"), "~Intensity.100", 5); // Brightness (0-100)
 				$this->EnableAction("brightness");
 			}
+            $this->SetUpdateIntervall();
 			// Status Aktiv
 			$this->SetStatus(102);
 		}
 	}
 
-	/**
-	 * Receive and update data
-	 * @param string $JSONString
-	 * @return bool|void
-	 */
-	public function ReceiveData($JSONString)
-	{
-		// convert json payload to array
-		$payload = json_decode($JSONString, true);
+    /**
+     * Set Timer Intervall
+     */
+    protected function SetUpdateIntervall()
+    {
+        $interval = ($this->ReadPropertyInteger("UpdateInterval")) * 1000; // interval seconds
+        $this->SendDebug("myStrom", "Set update interval to " . $interval . " seconds", 0);
+        $this->SetTimerInterval("MyStromDataUpdate", $interval);
+    }
 
-		// extract data
-		$data = $payload['Buffer'];
-		$this->SendDebug("myStrom received data", json_encode($data), 0);
-		$this->WriteVariables($data);
-	}
+    /**
+     * Update Data
+     */
+    public function DataUpdate()
+    {
+        $this->SendDebug("myStrom", "update", 0);
+        $this->GetCurrentState();
+    }
 
-	public function GetCurrentState()
-	{
 
-		$payload = $this->SendToIO("get_data", "get_current_state");
-		$this->SendDebug("MyStrom Response", $payload, 0);
-		$data = json_decode($payload, true);
-		$this->WriteVariables($data);
-		return $payload;
-	}
+    public function GetCurrentState()
+    {
+        $payload = $this->Send("get_current_state");
+        $this->SendDebug("MyStrom Response", $payload, 0);
+        $data = json_decode($payload, true);
+        $this->WriteVariables($data);
+        return $payload;
+    }
 
 	protected function WriteVariables($data)
 	{
@@ -339,7 +344,7 @@ class MyStrom extends IPSModule
 	{
 		$this->SetValue("status", true);
 		$command = "action=on";
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send( $command);
 		return $result;
 	}
 
@@ -347,7 +352,7 @@ class MyStrom extends IPSModule
 	{
 		$this->SetValue("status", false);
 		$command = "action=off";
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send($command);
 		return $result;
 	}
 
@@ -362,14 +367,14 @@ class MyStrom extends IPSModule
 			$this->SetValue("status", true);
 		}
 		$command = "action=toggle";
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send($command);
 		return $result;
 	}
 
 	public function DimTo(string $color, int $ramptime)
 	{
 		$command = "action=on&ramp=".$ramptime."&color=".$color;
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send( $command);
 		return $result;
 	}
 
@@ -549,7 +554,7 @@ class MyStrom extends IPSModule
 		$h = GetValue($this->GetIDForIdent("hue"));
 		$s = GetValue($this->GetIDForIdent("saturation"));
 		$command = "color=".$h.";".$s.";".$brightness;
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send($command);
 		$this->SetValue("brightness", $brightness);
 		$this->SetHexColor();
 		return $result;
@@ -557,7 +562,7 @@ class MyStrom extends IPSModule
 
 	public function GetBrightness()
 	{
-		$payload = $this->SendToIO("get_data", "get_current_state");
+		$payload = $this->Send( "get_current_state");
 		$this->SendDebug("MyStrom Response", $payload, 0);
 		$data = json_decode($payload, true);
 		$mac = key($data);
@@ -583,7 +588,7 @@ class MyStrom extends IPSModule
 		$s = GetValue($this->GetIDForIdent("saturation"));
 		$v = GetValue($this->GetIDForIdent("brightness"));
 		$command = "color=".$hue.";".$s.";".$v;
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send($command);
 		$this->SetValue("hue", $hue);
 		$this->SetHexColor();
 		return $result;
@@ -591,7 +596,7 @@ class MyStrom extends IPSModule
 
 	public function GetHue()
 	{
-		$payload = $this->SendToIO("get_data", "get_current_state");
+		$payload = $this->Send( "get_current_state");
 		$this->SendDebug("MyStrom Response", $payload, 0);
 		$data = json_decode($payload, true);
 		$mac = key($data);
@@ -617,7 +622,7 @@ class MyStrom extends IPSModule
 		$h = GetValue($this->GetIDForIdent("hue"));
 		$v = GetValue($this->GetIDForIdent("brightness"));
 		$command = "color=".$h.";".$sat.";".$v;
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send($command);
 		$this->SetValue("saturation", $sat);
 		$this->SetHexColor();
 		return $result;
@@ -625,7 +630,7 @@ class MyStrom extends IPSModule
 
 	public function GetSaturation()
 	{
-		$payload = $this->SendToIO("get_data", "get_current_state");
+		$payload = $this->Send("get_current_state");
 		$this->SendDebug("MyStrom Response", $payload, 0);
 		$data = json_decode($payload, true);
 		$mac = key($data);
@@ -652,22 +657,34 @@ class MyStrom extends IPSModule
 		$this->SetValue("hue", $h);
 		$this->SetValue("saturation", $s);
 		$this->SetValue("brightness", $v);
-		$result = $this->SendToIO("send_command", $command);
+		$result = $this->Send($command);
 		return $result;
 	}
 
-	function SendToIO($type, $command)
-	{
-		//an I/O schicken
-		$ip = $this->ReadPropertyString('ip');
-		$mac = $this->ReadPropertyString('mac');
-		$devicetype = $this->ReadPropertyInteger('devicetype');
-		$mac = strtoupper(str_replace(":", "", $mac));
-		$payload = array("type" => $type, "mac" => $mac, "ip" => $ip, "devicetype" => $devicetype, "command" => $command);
-		$this->SendDebug("myStrom send data", json_encode($payload), 0);
-		$result = $this->SendDataToParent(json_encode(Array("DataID" => "{E3854CBD-BEC9-4871-087A-3DDC2A4B926F}", "Buffer" => $payload))); // IO
-		return $result;
-	}
+
+
+    function Send($command)
+    {
+        $ip = $this->ReadPropertyString('ip');
+        $mac = $this->ReadPropertyString('mac');
+        $URL = "http://" . $ip . "/api/v1/device/" . $mac;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$URL);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $command);
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+
+        curl_close($ch);
+
+        if ($err) {
+            $this->SendDebug("MyStrom", "cURL Error #:" . $err, 0);
+            return "cURL Error #:" . $err;
+        } else {
+            return $response;
+        }
+    }
 
 	public function RequestAction($Ident, $Value)
 	{
@@ -776,126 +793,7 @@ class MyStrom extends IPSModule
 		}
 
 	}
-
-	/***********************************************************
-	 * Configuration Form
-	 ***********************************************************/
-
-	/**
-	 * build configuration form
-	 * @return string
-	 */
-	public function GetConfigurationForm()
-	{
-		// return current form
-		return json_encode([
-			'elements' => $this->FormHead(),
-			'actions' => $this->FormActions(),
-			'status' => $this->FormStatus()
-		]);
-	}
-
-	/**
-	 * return form configurations on configuration step
-	 * @return array
-	 */
-	protected function FormHead()
-	{
-		$form = [
-			[
-				'name' => 'devicetype',
-				'type' => 'Select',
-				'caption' => 'device type',
-				'options' => [
-					[
-						'label' => 'Please choose',
-						'value' => -1
-					],
-					[
-						'label' => 'Switch',
-						'value' => 0
-					],
-					[
-						'label' => 'Bulb',
-						'value' => 1
-					]
-				]
-			],
-			[
-				'type' => 'Label',
-				'label' => 'IP adress'
-			],
-			[
-				'name' => 'ip',
-				'type' => 'ValidationTextBox',
-				'caption' => 'IP adress'
-			],
-			[
-				'type' => 'Label',
-				'label' => 'MAC adress, please use ony uppercase without : for example 5CCF7F02D676'
-			],
-			[
-				'name' => 'mac',
-				'type' => 'ValidationTextBox',
-				'caption' => 'MAC adress'
-			]
-		];
-		return $form;
-	}
-
-	/**
-	 * return form actions
-	 * @return array
-	 */
-	protected function FormActions()
-	{
-		$form = [
-			[
-				'type' => 'Label',
-				'label' => 'Update'
-			],
-			[
-				'type' => 'Button',
-				'label' => 'Update',
-				'onClick' => 'MyStrom_DataUpdate($id);'
-			]
-		];
-
-		return $form;
-	}
-
-	/**
-	 * return from status
-	 * @return array
-	 */
-	protected function FormStatus()
-	{
-		$form = [
-			[
-				'code' => 101,
-				'icon' => 'inactive',
-				'caption' => 'Creating instance.'
-			],
-			[
-				'code' => 102,
-				'icon' => 'active',
-				'caption' => 'myStrom created.'
-			],
-			[
-				'code' => 104,
-				'icon' => 'inactive',
-				'caption' => 'interface closed.'
-			],
-			[
-				'code' => 205,
-				'icon' => 'error',
-				'caption' => 'mac has not correct length'
-			]
-		];
-
-		return $form;
-	}
-
+	
 	//Add this Polyfill for IP-Symcon 4.4 and older
 	protected function SetValue($Ident, $Value)
 	{

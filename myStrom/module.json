@@ -4,8 +4,8 @@
     "type": 3,
     "vendor": "myStrom",
     "aliases": ["myStrom"],
-    "parentRequirements": ["{E3854CBD-BEC9-4871-087A-3DDC2A4B926F}"],
+    "parentRequirements": [],
     "childRequirements": [],
-    "implemented": ["{5CD26D2F-626B-1998-D2B8-6068E6ACD376}"],
+    "implemented": [],
     "prefix": "MyStrom"
 }
