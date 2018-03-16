@@ -210,6 +210,7 @@ class MyStrom extends IPSModule
             {
                 $this->RegisterVariableBoolean("status", $this->Translate("State"), "~Switch", 1);
                 $this->EnableAction("status");
+				$this->RegisterVariableFloat("power", $this->Translate("Power"), "~Power", 2);
             } elseif ($devicetype == 1) // bulb
             {
                 $this->RegisterVariableBoolean("status", $this->Translate("State"), "~Switch", 1);
@@ -273,10 +274,13 @@ class MyStrom extends IPSModule
         $devicetype = $this->ReadPropertyInteger('devicetype');
         if ($devicetype == 0) // switch
         {
-            if (isset($data["power"])) {
-                $status = $data["power"];
+            if (isset($data["relay"])) {
+                $status = $data["relay"];
                 $this->SendDebug("MyStrom Status", $status, 0);
                 $this->SetValue("status", $status);
+				$power = $data["power"];
+				$this->SendDebug("MyStrom Power", $power, 0);
+				$this->SetValue("power", $power);
             }
         } elseif ($devicetype == 1) // bulb
         {
@@ -652,19 +656,21 @@ class MyStrom extends IPSModule
         $devicetype = $this->ReadPropertyInteger('devicetype');
         $ip = $this->ReadPropertyString('ip');
         $mac = $this->ReadPropertyString('mac');
-        if ($devicetype == 0) {
+        if ($devicetype == 0 && $command != "get_current_state") {
             $URL = "http://" . $ip . "/relay?" . $command;
         } elseif ($devicetype == 0 && $command == "get_current_state") {
             $URL = "http://" . $ip . "/report";
         } else {
             $URL = "http://" . $ip . "/api/v1/device/" . $mac;
         }
+		$this->SendDebug("MyStrom Send", $URL, 0);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $URL);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if ($devicetype == 1 && $command != "get_current_state") {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $command);
+			$this->SendDebug("MyStrom Send", "Post fields: ". $command, 0);
         }
         $response = curl_exec($ch);
         $err = curl_error($ch);
