@@ -210,7 +210,7 @@ class MyStrom extends IPSModule
             {
                 $this->RegisterVariableBoolean("status", $this->Translate("State"), "~Switch", 1);
                 $this->EnableAction("status");
-				$this->RegisterVariableFloat("power", $this->Translate("Power"), "~Power", 2);
+				$this->RegisterVariableFloat("power", $this->Translate("Power"), "~Watt3680", 2);
             } elseif ($devicetype == 1) // bulb
             {
                 $this->RegisterVariableBoolean("status", $this->Translate("State"), "~Switch", 1);
