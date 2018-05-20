@@ -41,6 +41,15 @@
       "name": "UpdateInterval",
       "type": "IntervalBox",
       "caption": "Seconds"
+    },
+    {
+      "type": "Label",
+      "label": "for switch optional show temperature"
+    },
+    {
+      "name": "temperature",
+      "type": "CheckBox",
+      "caption": "Temperature"
     }
   ],
   "actions": [

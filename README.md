@@ -88,6 +88,10 @@ Gerät ausschalten
 
 `MyStrom_White(integer $InstanceID)`
 
+Temperatur auslesen
+
+`MyStrom_GetTemperature(integer $InstanceID)`
+
 Lampe auf weiß stellen
 
 `MyStrom_Red(integer $InstanceID)`

@@ -166,6 +166,7 @@ class MyStrom extends IPSModule
         $this->RegisterPropertyString('ip', '');
         $this->RegisterPropertyString('mac', '');
         $this->RegisterPropertyInteger('UpdateInterval', 60);
+		$this->RegisterPropertyBoolean('temperature', false);
         $this->RegisterTimer('MyStromDataUpdate', 0, 'MyStrom_DataUpdate(' . $this->InstanceID . ');');
     }
 
@@ -234,6 +235,14 @@ class MyStrom extends IPSModule
                 $this->RegisterVariableInteger("brightness", $this->Translate("Brightness"), "~Intensity.100", 5); // Brightness (0-100)
                 $this->EnableAction("brightness");
             }
+
+			if ($this->ReadPropertyBoolean("temperature")) {
+
+				$this->RegisterVariableFloat('temperature', $this->Translate('Temperature'), '~Temperature', 7);
+			} else {
+				$this->UnregisterVariable('temperature');
+			}
+
             $this->SetUpdateIntervall();
             // Status Aktiv
             $this->SetStatus(102);
@@ -257,6 +266,7 @@ class MyStrom extends IPSModule
     {
         $this->SendDebug("myStrom", "update", 0);
         $this->GetCurrentState();
+		$this->GetTemperature();
     }
 
 
@@ -268,6 +278,15 @@ class MyStrom extends IPSModule
         $this->WriteVariables($data);
         return $payload;
     }
+
+	public function GetTemperature()
+	{
+		$payload = $this->Send("get_current_temperature");
+		$this->SendDebug("MyStrom Response", $payload, 0);
+		$data = json_decode($payload, true);
+		$this->WriteVariables($data);
+		return $payload;
+	}
 
     protected function WriteVariables($data)
     {
@@ -282,6 +301,11 @@ class MyStrom extends IPSModule
 				$this->SendDebug("MyStrom Power", $power, 0);
 				$this->SetValue("power", $power);
             }
+			if (isset($data["measured"])) {
+				$temperature = $data["measured"];
+				$this->SendDebug("MyStrom Temperature", $temperature, 0);
+				$this->SetValue("temperature", $temperature);
+			}
         } elseif ($devicetype == 1) // bulb
         {
             $mac = key($data);
@@ -660,7 +684,12 @@ class MyStrom extends IPSModule
             $URL = "http://" . $ip . "/relay?" . $command;
         } elseif ($devicetype == 0 && $command == "get_current_state") {
             $URL = "http://" . $ip . "/report";
-        } else {
+        }
+        elseif($devicetype == 0 && $command == "get_current_temperature")
+		{
+			$URL = "http://" . $ip . "/temp";
+		}
+        else {
             $URL = "http://" . $ip . "/api/v1/device/" . $mac;
         }
 		$this->SendDebug("MyStrom Send", $URL, 0);
