@@ -697,6 +697,9 @@ class MyStrom extends IPSModule
         curl_setopt($ch, CURLOPT_URL, $URL);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		if ($devicetype == 0 && $command == "get_current_temperature") {
+			curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		}
         if ($devicetype == 1 && $command != "get_current_state") {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $command);
 			$this->SendDebug("MyStrom Send", "Post fields: ". $command, 0);
