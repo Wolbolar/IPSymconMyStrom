@@ -267,6 +267,9 @@ class MyStrom extends IPSModule
         $this->SendDebug("myStrom", "update", 0);
         $this->GetCurrentState();
 		$this->GetTemperature();
+		$this->GetBrightness();
+		$this->GetHue();
+		$this->GetSaturation();
     }
 
 
