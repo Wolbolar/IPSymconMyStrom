@@ -304,8 +304,9 @@ class MyStrom extends IPSModule
 				$this->SendDebug("MyStrom Power", $power, 0);
 				$this->SetValue("power", $power);
             }
-			if (isset($data["measured"])) {
-				$temperature = $data["measured"];
+            // measured is original raw value
+			if (isset($data["compensated"])) {
+				$temperature = $data["compensated"];
 				$this->SendDebug("MyStrom Temperature", $temperature, 0);
 				$this->SetValue("temperature", $temperature);
 			}
