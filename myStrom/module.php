@@ -683,7 +683,7 @@ class MyStrom extends IPSModule
         $devicetype = $this->ReadPropertyInteger('devicetype');
         $ip = $this->ReadPropertyString('ip');
         $mac = $this->ReadPropertyString('mac');
-        if ($devicetype == 0 && $command != "get_current_state") {
+        if ($devicetype == 0 && ($command != "get_current_state" && $command != "get_current_temperature")) {
             $URL = "http://" . $ip . "/relay?" . $command;
         } elseif ($devicetype == 0 && $command == "get_current_state") {
             $URL = "http://" . $ip . "/report";
